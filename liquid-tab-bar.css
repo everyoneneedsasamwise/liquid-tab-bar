@@ -1,0 +1,136 @@
+/*!
+ * liquid-tab-bar.css — styles for the gooey bottom navigation bar.
+ * Theme by overriding the --ltb-* custom properties on .liquid-tab-bar.
+ */
+
+.liquid-tab-bar {
+  /* --- theme tokens (override these) --- */
+  --ltb-max-width: 480px;
+  --ltb-accent: #e09f5c;              /* set live by JS to the active tab's colour */
+  --ltb-bar-fill: #161c2b;
+  --ltb-bar-stroke: rgba(238, 189, 138, 0.18);
+  --ltb-label: #66728b;               /* inactive icon + label */
+  --ltb-label-active: #0b0f1a;        /* active icon sitting on the ball */
+  --ltb-ball-highlight: rgba(255, 255, 255, 0.18);
+  --ltb-focus: #eebd8a;
+  --ltb-lift: -28px;                  /* how high the active icon rides the ball */
+  --ltb-glow-opacity: 0.5;
+
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--ltb-max-width);
+  height: calc(64px + 30px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  box-sizing: border-box;
+  z-index: 50;
+  touch-action: none;
+}
+
+.liquid-tab-bar__clearance,
+body.has-liquid-tab-bar {
+  /* add this class to <body> (or use the utility) so page content isn't
+     hidden behind the fixed bar */
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+.ltb__glow {
+  position: absolute;
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  width: 120px;
+  height: 64px;
+  border-radius: 50%;
+  filter: blur(28px);
+  opacity: var(--ltb-glow-opacity);
+  background: var(--ltb-accent);
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition: background 0.4s ease;
+}
+
+.ltb__membrane {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  height: calc(64px + 30px);
+  overflow: visible;
+  pointer-events: none;
+  display: block;
+}
+
+.ltb__bar {
+  fill: var(--ltb-bar-fill);
+  stroke: var(--ltb-bar-stroke);
+  stroke-width: 1;
+}
+.ltb__ball { fill: var(--ltb-accent); transition: fill 0.4s ease; }
+.ltb__ballHi { fill: var(--ltb-ball-highlight); }
+
+.ltb__tabs {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  height: 64px;
+  display: flex;
+}
+
+.ltb__tab {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--ltb-label);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ltb__tab svg {
+  width: 21px;
+  height: 21px;
+  transition: transform 0.45s cubic-bezier(0.5, 1.3, 0.5, 1), color 0.3s ease;
+}
+
+.ltb__lbl {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: opacity 0.3s ease;
+}
+
+.ltb__tab.is-active { color: var(--ltb-label-active); }
+.ltb__tab.is-active svg { transform: translateY(var(--ltb-lift)); }
+.ltb__tab.is-active .ltb__lbl { opacity: 0; }
+
+.ltb__tab:focus-visible {
+  outline: 2px solid var(--ltb-focus);
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+/* Optional light theme: add data-theme="light" to the nav */
+.liquid-tab-bar[data-theme="light"] {
+  --ltb-bar-fill: #ffffff;
+  --ltb-bar-stroke: rgba(20, 24, 40, 0.1);
+  --ltb-label: #9aa3b2;
+  --ltb-label-active: #ffffff;
+  --ltb-ball-highlight: rgba(255, 255, 255, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ltb__ball { transition: none; }
+  .ltb__tab svg { transition: transform 0.01ms, color 0.01ms; }
+}

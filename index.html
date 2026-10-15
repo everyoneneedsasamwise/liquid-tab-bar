@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>liquid-tab-bar — a gooey bottom nav</title>
+<meta name="description" content="A bottom navigation bar whose surface sags under a finger-following ball, like a mattress under a bowling ball. Zero dependencies, ~4KB." />
+<link rel="stylesheet" href="liquid-tab-bar.css" />
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --bg2: #121829;
+    --fg: #e7ecf5;
+    --muted: #8893a7;
+    --card: rgba(255, 255, 255, 0.04);
+    --card-br: rgba(255, 255, 255, 0.08);
+    --code-bg: #0e1422;
+    --accent: #e09f5c;
+  }
+  html[data-theme="light"] {
+    --bg: #f4f6fb;
+    --bg2: #e9edf6;
+    --fg: #141828;
+    --muted: #5b647a;
+    --card: rgba(20, 24, 40, 0.03);
+    --card-br: rgba(20, 24, 40, 0.1);
+    --code-bg: #0e1422;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background:
+      radial-gradient(90rem 50rem at 50% -20%, var(--bg2), var(--bg) 60%),
+      var(--bg);
+    color: var(--fg);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.55;
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    padding-left: max(18px, env(safe-area-inset-left));
+    padding-right: max(18px, env(safe-area-inset-right));
+  }
+  body.has-liquid-tab-bar { padding-bottom: calc(118px + env(safe-area-inset-bottom, 0px)); }
+  .wrap { max-width: 720px; margin: 0 auto; padding-top: 54px; }
+
+  .eyebrow {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 14px;
+  }
+  h1 {
+    font-size: clamp(32px, 6.5vw, 56px); line-height: 1.04; letter-spacing: -0.02em;
+    margin: 0 0 16px; font-weight: 650; text-wrap: balance;
+  }
+  h1 .thin { font-weight: 300; color: var(--muted); }
+  .lede { font-size: clamp(16px, 2.4vw, 18.5px); color: var(--muted); max-width: 52ch; margin: 0 0 26px; }
+
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 14px; font-weight: 550; text-decoration: none;
+    padding: 10px 16px; border-radius: 10px; cursor: pointer;
+    border: 1px solid var(--card-br); color: var(--fg); background: var(--card);
+    transition: transform 0.12s ease, border-color 0.2s ease;
+  }
+  .btn:hover { transform: translateY(-1px); border-color: var(--accent); }
+  .btn--primary { background: var(--accent); color: #0b0f1a; border-color: transparent; font-weight: 650; }
+
+  .hint {
+    margin: 30px 0 0; display: inline-flex; align-items: center; gap: 9px;
+    font-size: 13.5px; color: var(--muted);
+    padding: 9px 14px; border-radius: 999px; border: 1px dashed var(--card-br);
+  }
+  .hint .dot {
+    width: 12px; height: 12px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 0 var(--accent); animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent); }
+    70% { box-shadow: 0 0 0 10px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+  }
+
+  /* routed panels */
+  .panels { margin-top: 40px; }
+  .panel { display: none; animation: fade 0.4s ease both; }
+  .panel.is-shown { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .panel h2 { font-size: 22px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .panel p { color: var(--muted); margin: 0 0 18px; max-width: 54ch; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .cards > div {
+    background: var(--card); border: 1px solid var(--card-br); border-radius: 12px;
+    padding: 16px; min-height: 92px; font-size: 14px; color: var(--muted);
+  }
+  .cards b { color: var(--fg); display: block; margin-bottom: 4px; font-weight: 600; }
+
+  /* usage */
+  section.use { margin-top: 56px; border-top: 1px solid var(--card-br); padding-top: 34px; }
+  section.use h2 { font-size: 15px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
+  pre {
+    background: var(--code-bg); color: #d7e0f2; border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px; padding: 18px 20px; overflow-x: auto; margin: 0;
+    font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; line-height: 1.65;
+  }
+  pre .k { color: #e09f5c; } pre .s { color: #6ee7b7; } pre .c { color: #66728b; }
+
+  footer { margin-top: 48px; color: var(--muted); font-size: 13px; }
+  footer a { color: var(--fg); }
+
+  .toggle {
+    position: fixed; top: 16px; right: max(16px, env(safe-area-inset-right));
+    z-index: 60; width: 38px; height: 38px; border-radius: 10px; cursor: pointer;
+    border: 1px solid var(--card-br); background: var(--card); color: var(--fg);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+</style>
+</head>
+<body class="has-liquid-tab-bar">
+  <button class="toggle" id="themeBtn" aria-label="Toggle light / dark">◐</button>
+
+  <div class="wrap">
+    <p class="eyebrow">zero dependencies · ~4KB · MIT</p>
+    <h1>liquid&#8209;tab&#8209;bar<br /><span class="thin">a bottom nav that sags under your finger.</span></h1>
+    <p class="lede">
+      The bar's surface is a real membrane — it dents <em>downward</em> under a ball that
+      follows your pointer and settles onto the tab you release over. No images, no blur
+      hacks, no framework. Drop in one script and one stylesheet.
+    </p>
+    <div class="row">
+      <a class="btn btn--primary" href="https://github.com/everyoneneedsasamwise/liquid-tab-bar">★ Star on GitHub</a>
+      <a class="btn" href="#usage">How to use it</a>
+    </div>
+
+    <div class="hint"><span class="dot"></span> Grab the ball and drag it along the bar below &darr;</div>
+
+    <div class="panels">
+      <section class="panel" id="home">
+        <h2>Home</h2>
+        <p>Tap a tab, or drag the ball. Active state tracks the URL hash — here it swaps these panels, in a real app it follows your router.</p>
+        <div class="cards">
+          <div><b>Membrane</b>A computed Gaussian dip, not a blur filter.</div>
+          <div><b>Follow</b>requestAnimationFrame easing with liquid lag.</div>
+          <div><b>Settle</b>Release and the ball snaps to the nearest tab.</div>
+        </div>
+      </section>
+      <section class="panel" id="explore">
+        <h2>Explore</h2>
+        <p>Each tab carries its own accent colour. The ball and its glow tint to whichever tab it's resting on — try dragging slowly across all five.</p>
+        <div class="cards">
+          <div><b>Theming</b>Every colour is a <code>--ltb-*</code> CSS variable.</div>
+          <div><b>Icons</b>14 built in; or drop your own inline SVG.</div>
+          <div><b>Light mode</b>Add <code>data-theme="light"</code>.</div>
+        </div>
+      </section>
+      <section class="panel" id="create">
+        <h2>Create</h2>
+        <p>Progressive enhancement: you write plain, accessible <code>&lt;a&gt;</code> links. The script upgrades them in place, so it still works and still reads correctly if the JS never loads.</p>
+        <div class="cards">
+          <div><b>Accessible</b>Real links, <code>aria-current</code>, focus rings.</div>
+          <div><b>Keyboard</b>Tab to focus, Enter to navigate.</div>
+          <div><b>Pointer</b>Mouse, touch and pen via Pointer Events.</div>
+        </div>
+      </section>
+      <section class="panel" id="saved">
+        <h2>Saved</h2>
+        <p>Reduced-motion aware — if the visitor asks their OS for less motion, the ball jumps straight to the tab instead of easing.</p>
+        <div class="cards">
+          <div><b>Respectful</b>Honours <code>prefers-reduced-motion</code>.</div>
+          <div><b>Responsive</b>Stretches to its container, caps at 480px.</div>
+          <div><b>Safe-area</b>Clears the iOS home indicator.</div>
+        </div>
+      </section>
+      <section class="panel" id="profile">
+        <h2>Profile</h2>
+        <p>One <code>LiquidTabBar.mount()</code> call, or just the <code>data-liquid-tab-bar</code> attribute for auto-init. That's the whole API.</p>
+        <div class="cards">
+          <div><b>~4KB</b>Minifies small, gzips smaller.</div>
+          <div><b>No deps</b>Vanilla JS. Works with any framework or none.</div>
+          <div><b>MIT</b>Use it anywhere, commercial included.</div>
+        </div>
+      </section>
+    </div>
+
+    <section class="use" id="usage">
+      <h2>Drop it in</h2>
+<pre><span class="c">&lt;!-- 1. the markup: plain, accessible links --&gt;</span>
+&lt;<span class="k">nav</span> class=<span class="s">"liquid-tab-bar"</span> data-liquid-tab-bar&gt;
+  &lt;<span class="k">a</span> href=<span class="s">"#home"</span>    data-icon=<span class="s">"home"</span>&gt;Home&lt;/a&gt;
+  &lt;<span class="k">a</span> href=<span class="s">"#explore"</span> data-icon=<span class="s">"compass"</span>&gt;Explore&lt;/a&gt;
+  &lt;<span class="k">a</span> href=<span class="s">"#create"</span>  data-icon=<span class="s">"grid"</span>&gt;Create&lt;/a&gt;
+  &lt;<span class="k">a</span> href=<span class="s">"#saved"</span>   data-icon=<span class="s">"heart"</span>&gt;Saved&lt;/a&gt;
+  &lt;<span class="k">a</span> href=<span class="s">"#profile"</span> data-icon=<span class="s">"user"</span>&gt;Profile&lt;/a&gt;
+&lt;/<span class="k">nav</span>&gt;
+
+<span class="c">&lt;!-- 2. the files (auto-initialises on load) --&gt;</span>
+&lt;<span class="k">link</span> rel=<span class="s">"stylesheet"</span> href=<span class="s">"liquid-tab-bar.css"</span>&gt;
+&lt;<span class="k">script</span> src=<span class="s">"liquid-tab-bar.js"</span>&gt;&lt;/<span class="k">script</span>&gt;</pre>
+    </section>
+
+    <footer>
+      <p>Built by <a href="https://everyoneneedsasamwise.com">Everyone Needs a Samwise</a> ·
+      <a href="https://github.com/everyoneneedsasamwise/liquid-tab-bar">source on GitHub</a> · MIT licensed.</p>
+    </footer>
+  </div>
+
+  <!-- the component -->
+  <nav class="liquid-tab-bar" data-liquid-tab-bar>
+    <a href="#home"    data-icon="home"    data-color="#e09f5c">Home</a>
+    <a href="#explore" data-icon="compass" data-color="#8aa0e8">Explore</a>
+    <a href="#create"  data-icon="grid"    data-color="#6ee7b7">Create</a>
+    <a href="#saved"   data-icon="heart"   data-color="#f0929b">Saved</a>
+    <a href="#profile" data-icon="user"    data-color="#b89cf0">Profile</a>
+  </nav>
+
+  <script src="liquid-tab-bar.js"></script>
+  <script>
+    // demo-only wiring: swap the content panels when the hash changes
+    var panels = document.querySelectorAll(".panel");
+    function showPanel() {
+      var id = (location.hash || "#home").slice(1);
+      var found = false;
+      panels.forEach(function (p) {
+        var on = p.id === id;
+        p.classList.toggle("is-shown", on);
+        if (on) found = true;
+      });
+      if (!found) panels[0].classList.add("is-shown");
+    }
+    window.addEventListener("hashchange", showPanel);
+    showPanel();
+
+    // demo-only: light / dark toggle (also flips the bar's own theme)
+    var btn = document.getElementById("themeBtn");
+    var nav = document.querySelector(".liquid-tab-bar");
+    btn.addEventListener("click", function () {
+      var light = document.documentElement.getAttribute("data-theme") === "light";
+      var next = light ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", next);
+      if (next === "light") nav.setAttribute("data-theme", "light");
+      else nav.removeAttribute("data-theme");
+    });
+  </script>
+</body>
+</html>

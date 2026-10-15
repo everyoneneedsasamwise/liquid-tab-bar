@@ -1,0 +1,37 @@
+{
+  "name": "liquid-tab-bar",
+  "version": "1.0.0",
+  "description": "A bottom navigation bar whose surface sags under a finger-following ball, like a mattress under a bowling ball. Zero dependencies, ~4KB.",
+  "main": "liquid-tab-bar.js",
+  "style": "liquid-tab-bar.css",
+  "files": [
+    "liquid-tab-bar.js",
+    "liquid-tab-bar.css"
+  ],
+  "scripts": {
+    "demo": "python3 -m http.server 8080"
+  },
+  "keywords": [
+    "navigation",
+    "tab-bar",
+    "bottom-nav",
+    "gooey",
+    "liquid",
+    "svg",
+    "animation",
+    "vanilla-js",
+    "ui",
+    "mobile"
+  ],
+  "homepage": "https://everyoneneedsasamwise.github.io/liquid-tab-bar/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/everyoneneedsasamwise/liquid-tab-bar.git"
+  },
+  "author": "Everyone Needs a Samwise",
+  "license": "MIT",
+  "sideEffects": [
+    "liquid-tab-bar.js",
+    "*.css"
+  ]
+}

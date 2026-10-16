@@ -1,7 +1,7 @@
 /*!
  * liquid-tab-bar — a gooey bottom navigation bar.
  * A membrane that sags under a finger-following ball, like a mattress under a
- * bowling ball. Zero dependencies. ~4KB. MIT licensed.
+ * bowling ball. Zero dependencies. ~6KB gzipped. MIT licensed.
  *
  * The sag is a computed SVG path (a Gaussian dip), NOT a goo blur filter — a
  * blur can only bulge a shape outward, never dent it inward.

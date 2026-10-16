@@ -2,7 +2,7 @@
 
 A bottom navigation bar whose surface **sags under a finger-following ball** — like a mattress under a bowling ball. The ball tracks your pointer, dents the bar downward as it goes, and settles onto the tab you release over. No images, no SVG goo-blur hacks, no framework.
 
-**[▶ Live demo](https://everyoneneedsasamwise.github.io/liquid-tab-bar/)** · zero dependencies · ~4KB · MIT
+**[▶ Live demo](https://everyoneneedsasamwise.github.io/liquid-tab-bar/)** · zero dependencies · ~6KB gzipped · MIT
 
 ![liquid-tab-bar demo](demo.gif)
 

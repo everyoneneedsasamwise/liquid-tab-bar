@@ -1,7 +1,7 @@
 {
   "name": "liquid-tab-bar",
   "version": "1.0.0",
-  "description": "A bottom navigation bar whose surface sags under a finger-following ball, like a mattress under a bowling ball. Zero dependencies, ~4KB.",
+  "description": "A bottom navigation bar whose surface sags under a finger-following ball, like a mattress under a bowling ball. Zero dependencies, ~6KB gzipped.",
   "main": "liquid-tab-bar.js",
   "style": "liquid-tab-bar.css",
   "files": [
